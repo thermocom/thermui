@@ -8,11 +8,8 @@ from PyQt5 import QtCore
 from PyQt5.QtWidgets import *
 
 import thermui
+import utils
 import conftree
-
-logging.basicConfig(level=5,
-                    format='%(asctime)s - %(name)s:%(lineno)d: %(message)s')
-logger = logging.getLogger()
 
 class Therm_Main(QWidget):
     def __init__(self, parent=None):
@@ -29,7 +26,9 @@ class Therm_Main(QWidget):
             sys.exit(1)
 
         conf = conftree.ConfSimple(confname)
-
+        utils.initlog(conf)
+        self.logger = logging.getLogger()
+        
         self.datarepo = conf.get('datarepo')
         self.scratchdir = conf.get('scratchdir')
         if not self.datarepo or not self.scratchdir:
@@ -107,7 +106,7 @@ class Therm_Main(QWidget):
             self.ui.lcdNumber.display(self.measuredtemp)
 
     def on_commandePB_toggled(self, checked):
-        logger.debug("on_commandePB_toggled: checked %d", checked)
+        self.logger.debug("on_commandePB_toggled: checked %d", checked)
         if checked:
             self.ui.commandePB.setText("Commande\nlocale")
             self._setlocalsetting()
@@ -117,18 +116,19 @@ class Therm_Main(QWidget):
         self._manageUiState()
 
     def on_displayPB_toggled(self, checked):
-        logger.debug("on_displayPB_toggled: checked %d", checked)
+        self.logger.debug("on_displayPB_toggled: checked %d", checked)
         if checked:
             self.ui.displayPB.setText("Consigne")
         else:
             self.ui.displayPB.setText("Mesure")
         self._manageUiState()
             
-    def on_dial_sliderMoved(self, value):
-        logger.debug("dial: value %d", value)
+    def on_dial_valueChanged(self, value):
         delta = value - self.lastDialValue
+        self.logger.debug("dial: value %d delta %d", value, delta)
         self.lastDialValue = value
-        if delta > 10 or delta < -10:
+        if delta > 90 or delta < -90:
+            # Went through 0
             return
         self.localsetting += float(delta)/50.0
         self._setlocalsetting()
