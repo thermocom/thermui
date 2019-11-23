@@ -65,6 +65,8 @@ class Therm_Main(QWidget):
         else:
             self.ui.commandePB.setChecked(False)
             self.on_commandePB_toggled(False)
+
+        self.ui.dial.setWrapping(True)
         self.lastDialValue = 0
             
         #with open(self.myscratch, 'w') as f:

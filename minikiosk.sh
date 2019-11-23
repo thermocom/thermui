@@ -1,6 +1,6 @@
 #!/bin/sh
 
-THERM_CONFIG=/home/dockes/.therm_config
+THERM_CONFIG=~/.therm_config
 export THERM_CONFIG
 
 #xset s noblank
@@ -10,7 +10,8 @@ xset -dpms
 unclutter -idle 0.5 -root &
 
 #matchbox-window-manager&
+
 while true;do
-    /home/dockes/thermui/therm.py
+    ~/thermui/therm.py
     sleep 2
 done
