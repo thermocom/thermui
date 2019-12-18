@@ -45,6 +45,10 @@ class Therm_Main(QWidget):
                                  "%s not found: controller not active" %
                                  self.ctlscratch)
             sys.exit(1)
+        self._refreshTimer = QtCore.QTimer()
+        self._refreshTimer.timeout.connect(self._periodic)
+        self._refreshTimer.start(15 * 1000.0)
+
         self._readCtlValues()
         cf = None
         self.localactive = False
@@ -93,6 +97,7 @@ class Therm_Main(QWidget):
         self.remotesetting = float(self.remotesetting)
         
     def _manageUiState(self):
+        self._readCtlValues()
         cmdlocal = self.ui.commandePB.isChecked()
         displaysetting = self.ui.displayPB.isChecked()
         if cmdlocal and displaysetting:
@@ -134,6 +139,9 @@ class Therm_Main(QWidget):
             return
         self.localsetting += float(delta)/50.0
         self._setlocalsetting()
+        self._manageUiState()
+
+    def _periodic(self):
         self._manageUiState()
         
 def main(args):
